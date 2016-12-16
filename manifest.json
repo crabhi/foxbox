@@ -1,0 +1,14 @@
+{
+  "name": "FoxBox",
+  "short_name": "FoxBox",
+	"icons": [
+		{
+			"src": "img/icon.png",
+			"sizes": "144x144",
+			"type": "image/png"
+		}
+	],
+	"start_url": ".",
+	"display": "standalone",
+  "background_color": "#fff"
+}
