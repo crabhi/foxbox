@@ -29,7 +29,7 @@ h1, h2 {
 </style>
 <body>
 <div class="container" hidden>
-	<div class="row" style="text-align: center" hidden>
+	<div class="row" style="text-align: center">
 		<div class="">
 		<img src="img/icon.png">
 		<h1>FoxBox</h1>
@@ -45,7 +45,7 @@ h1, h2 {
 				<input style="width: 100%;">
 			</div>
 			<div class="col-md-2">
-				<input type="submit" value="OK" style="width: 100%">
+				<input type="submit" type="text" required="true" value="OK" style="width: 100%" placeholder="https://my-hit.org/serial/5001/">
 			</div>
 		</form>
 	</div>
@@ -73,12 +73,14 @@ h1, h2 {
   </div>
 </div>
 
-<div class="templates" hidden>
+<div class="foxbox-templates" hidden>
+	<table>
 	<tr class="serial-row" data-db-key="">
 		<td class="serial-text">
 		</td>
 		<td class="remove"></td>
 	</tr>
+	</table>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7" crossorigin="anonymous"></script>
@@ -112,11 +114,31 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 function reloadData() {
     firebase.database().ref('/serialy').once('value').then(function(snapshot) {
-        console.log(snapshot.val());
+        updateSeries(snapshot.val());
+
         $("#myModal").modal("hide");        
 		$("body > .container").removeAttr("hidden");
     });
 };
+
+function updateSeries(serialy) {
+	var sArr = [];
+	for (var dbKey in serialy) {
+		var s = serialy[dbKey];
+		s["db_key"] = dbKey;
+		sArr.push(s);
+	}
+
+	sArr.sort(function(a, b) { return b["timestamp"] - a["timestamp"]; });
+
+	sArr.forEach(function (s) {
+		var row = $(".foxbox-templates .serial-row").clone();
+		$(".serial-text", row).text(s["name"] ? s["name"] : s["web_url"]);
+		row.attr("data-db-key", s["db_key"]);
+
+		row.appendTo("#serialy");
+	});
+}
 
 $(function () {
 	$('#myModal').modal();
