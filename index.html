@@ -39,7 +39,7 @@ form.add input {
 }
 </style>
 <body>
-<div class="container" hidden>
+<div class="container">
 	<div class="row" style="text-align: center">
 		<div class="">
 		<img src="img/icon.png">
@@ -57,7 +57,7 @@ form.add input {
 			</div>
 		</form>
 	</div>
-	<h2>Serialy</h2>
+	<h2 class="serialy-title">Serialy<span class="loader"> - loading... <i class="fa fa-refresh fa-spin" style="font-size:64px;"></i></span></h2>
 
 	<div class="row">
 		<table id="serialy" style="width: 100%" class="table table-hover">
@@ -65,22 +65,6 @@ form.add input {
 			</tbody>
 		</table>
 	</div>
-</div>
-
-
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel">
-        	FoxBox is loading...
-        </h4>
-      </div>
-      <div class="modal-body" style=" text-align: center">
-		<i class="fa fa-refresh fa-spin" style="font-size:64px;"></i>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="foxbox-templates" hidden>
@@ -126,15 +110,16 @@ firebase.auth().onAuthStateChanged(function(user) {
 });
 
 function reloadData() {
-    firebase.database().ref('/serialy').once('value').then(function(snapshot) {
+	$(".serialy-title .loader").removeAttr("hidden", "hidden");
+    firebase.database().ref('/serialy').on('value', function(snapshot) {
         updateSeries(snapshot.val());
 
-        $("#myModal").modal("hide");        
-		$("body > .container").removeAttr("hidden");
+		$(".serialy-title .loader").attr("hidden", "hidden");
     });
 };
 
 function updateSeries(serialy) {
+	$("#serialy tbody").empty();
 	var sArr = [];
 	for (var dbKey in serialy) {
 		var s = serialy[dbKey];
@@ -162,7 +147,7 @@ function removeOne(dbKey) {
 		e.preventDefault();
 
 		firebase.database().ref("/serialy/" + dbKey).remove();
-		$(e.target).parents(".serial-row").remove();
+		// $(e.target).parents(".serial-row").remove();
 	}
 	
 	return remove;
@@ -179,7 +164,7 @@ function addOne(e) {
 }
 
 $(function () {
-	$('#myModal').modal();
+	// $('#myModal').modal();
 
 	$("form.add").submit(addOne);
 });
