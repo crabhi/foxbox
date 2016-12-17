@@ -26,6 +26,17 @@ html body {
 h1, h2 {
 	padding: 1em;
 }
+
+#serialy .remove {
+    cursor: pointer;
+}
+
+form.add input {
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	margin-top: 0.5em;
+	margin-bottom: 1em;
+}
 </style>
 <body>
 <div class="container" hidden>
@@ -37,22 +48,21 @@ h1, h2 {
 		</div>
 	</div>
 	<div class="row">
-		<form>
-			<div class="col-md-2">			
-				<label>Pridat novy</label>
+		<form class="add">
+			<div class="col-md-9">
+				<input id="web_url" style="width: 100%;" required="true" type="text" placeholder="https://my-hit.org/serial/5001/">
 			</div>
-			<div class="col-md-8">
-				<input style="width: 100%;">
-			</div>
-			<div class="col-md-2">
-				<input type="submit" type="text" required="true" value="OK" style="width: 100%" placeholder="https://my-hit.org/serial/5001/">
+			<div class="col-md-3">
+				<input type="submit" value="Add new" style="width: 100%">
 			</div>
 		</form>
 	</div>
 	<h2>Serialy</h2>
 
 	<div class="row">
-		<table id="serialy">
+		<table id="serialy" style="width: 100%" class="table table-hover">
+			<tbody>
+			</tbody>
 		</table>
 	</div>
 </div>
@@ -76,9 +86,12 @@ h1, h2 {
 <div class="foxbox-templates" hidden>
 	<table>
 	<tr class="serial-row" data-db-key="">
-		<td class="serial-text">
+		<td>
+			<a class="serial-text"></a>
 		</td>
-		<td class="remove"></td>
+		<td class="remove" title="Remove row">
+			<i class="fa fa-times" aria-hidden="true"></i>
+		</td>
 	</tr>
 	</table>
 </div>
@@ -133,16 +146,43 @@ function updateSeries(serialy) {
 
 	sArr.forEach(function (s) {
 		var row = $(".foxbox-templates .serial-row").clone();
-		$(".serial-text", row).text(s["name"] ? s["name"] : s["web_url"]);
-		row.attr("data-db-key", s["db_key"]);
+		$(".serial-text", row)
+			.text(s["name"] ? s["name"] : s["web_url"])
+			.attr("href", s["web_url"]);
 
-		row.appendTo("#serialy");
+		$(".remove", row).click(removeOne(s["db_key"]));
+		
+		row.attr("data-db-key", s["db_key"])
+			.appendTo("#serialy tbody");
+	});
+}
+
+function removeOne(dbKey) {
+	function remove(e) {
+		e.preventDefault();
+
+		firebase.database().ref("/serialy/" + dbKey).remove();
+		$(e.target).parents(".serial-row").remove();
+	}
+	
+	return remove;
+}
+
+function addOne(e) {
+	e.preventDefault();
+	var webUrl = $("#web_url", e.target).val();
+
+	firebase.database().ref("/serialy").push({
+		"web_url": webUrl,
+		"timestamp": {".sv": "timestamp"}
 	});
 }
 
 $(function () {
 	$('#myModal').modal();
-})
+
+	$("form.add").submit(addOne);
+});
 </script>
 
 </body>
