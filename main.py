@@ -26,6 +26,7 @@ from __future__ import print_function
 import re, os, urllib, cookielib, time
 import urlparse
 
+import signal
 import subprocess
 import socket, threading
 import sys
@@ -166,13 +167,28 @@ class ProxyPlayer(xbmc.Player):
         self.proxy_ready = threading.Event()
 
     def _proxy(self):
+        PID_FILE = os.path.expanduser("~/livestreamer.pid")
+
+        if os.path.exists(PID_FILE):
+            with open(PID_FILE) as f:
+                old_process = f.read().strip()
+
+            if old_process != "":
+                try:
+                    os.kill(int(old_process), signal.SIGKILL)
+                except:
+                    pass
+
         self.port = get_empty_port()
 
         self.process = subprocess.Popen(["livestreamer",
-                          "--player-external-http",
-                          "--player-external-http-port", str(self.port),
-                          "--best",
-                          self.url])
+                                         "--player-external-http",
+                                         "--player-external-http-port", str(self.port),
+                                         "--best",
+                                         self.url])
+
+        with open(PID_FILE, "w") as f:
+            print(self.process.pid, file=f)
 
         self.proxy_ready.set()
 
@@ -196,9 +212,11 @@ class ProxyPlayer(xbmc.Player):
         self.play(video, i)
 
     def onPlayBackEnded(self):
+        print("FoxBox onPlaybackEnded")
         self.stop = True
 
     def onPlayBackStopped(self):
+        print("FoxBox onPlaybackStopped")
         self.stop = True
 
 
