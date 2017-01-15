@@ -1,0 +1,14 @@
+{
+  "testkey" : {
+    "time_added" : 10,
+    "url" : "https://my-hit.org/serial/5123/"
+  },
+  "testkey2" : {
+    "time_added" : 20,
+    "url" : "https://my-hit.org/serial/3275/"
+  },
+  "testkey3" : {
+    "time_added" : 15,
+    "url" : "https://www.youtube.com/watch?v=13LNsAezWC8"
+  }
+}
