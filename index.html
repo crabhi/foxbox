@@ -8,8 +8,8 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="fonts/stylesheet.css">
     <!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <style>
 html body {
@@ -17,14 +17,14 @@ html body {
 }
 
 #myModalLabel {
-	background-image: url(img/icon.png);
+    background-image: url(img/icon.png);
     background-repeat: no-repeat;
     background-position: left 0.15em;
     background-size: auto 1em;
     padding-left: 1.5em;
 }
 h1, h2 {
-	padding: 1em;
+    padding: 1em;
 }
 
 #serialy .remove {
@@ -32,52 +32,52 @@ h1, h2 {
 }
 
 form.add input {
-	padding-top: 0.5em;
-	padding-bottom: 0.5em;
-	margin-top: 0.5em;
-	margin-bottom: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    margin-top: 0.5em;
+    margin-bottom: 1em;
 }
 </style>
 <body>
 <div class="container">
-	<div class="row" style="text-align: center">
-		<div class="">
-		<img src="img/icon.png">
-		<h1>FoxBox</h1>
+    <div class="row" style="text-align: center">
+        <div class="">
+        <img src="img/icon.png">
+        <h1>FoxBox</h1>
 
-		</div>
-	</div>
-	<div class="row">
-		<form class="add">
-			<div class="col-md-9">
-				<input id="web_url" style="width: 100%;" required="true" type="text" placeholder="https://my-hit.org/serial/5001/">
-			</div>
-			<div class="col-md-3">
-				<input type="submit" value="Add new" style="width: 100%">
-			</div>
-		</form>
-	</div>
-	<h2 class="serialy-title">Serialy<span class="loader"> - loading... <i class="fa fa-refresh fa-spin" style="font-size:64px;"></i></span></h2>
+        </div>
+    </div>
+    <div class="row">
+        <form class="add">
+            <div class="col-md-9">
+                <input id="web_url" style="width: 100%;" required="true" type="text" placeholder="https://my-hit.org/serial/5001/">
+            </div>
+            <div class="col-md-3">
+                <input type="submit" value="Add new" style="width: 100%">
+            </div>
+        </form>
+    </div>
+    <h2 class="serialy-title">Serialy<span class="loader"> - loading... <i class="fa fa-refresh fa-spin" style="font-size:64px;"></i></span></h2>
 
-	<div class="row">
-		<table id="serialy" style="width: 100%" class="table table-hover">
-			<tbody>
-			</tbody>
-		</table>
-	</div>
+    <div class="row">
+        <table id="serialy" style="width: 100%" class="table table-hover">
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div class="foxbox-templates" hidden>
-	<table>
-	<tr class="serial-row" data-db-key="">
-		<td>
-			<a class="serial-text"></a>
-		</td>
-		<td class="remove" title="Remove row">
-			<i class="fa fa-times" aria-hidden="true"></i>
-		</td>
-	</tr>
-	</table>
+    <table>
+    <tr class="serial-row" data-db-key="">
+        <td>
+            <a class="serial-text"></a>
+        </td>
+        <td class="remove" title="Remove row">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </td>
+    </tr>
+    </table>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7" crossorigin="anonymous"></script>
@@ -110,63 +110,63 @@ firebase.auth().onAuthStateChanged(function(user) {
 });
 
 function reloadData() {
-	$(".serialy-title .loader").removeAttr("hidden", "hidden");
+    $(".serialy-title .loader").removeAttr("hidden", "hidden");
     firebase.database().ref('/serialy').on('value', function(snapshot) {
         updateSeries(snapshot.val());
 
-		$(".serialy-title .loader").attr("hidden", "hidden");
+        $(".serialy-title .loader").attr("hidden", "hidden");
     });
 };
 
 function updateSeries(serialy) {
-	$("#serialy tbody").empty();
-	var sArr = [];
-	for (var dbKey in serialy) {
-		var s = serialy[dbKey];
-		s["db_key"] = dbKey;
-		sArr.push(s);
-	}
+    $("#serialy tbody").empty();
+    var sArr = [];
+    for (var dbKey in serialy) {
+        var s = serialy[dbKey];
+        s["db_key"] = dbKey;
+        sArr.push(s);
+    }
 
-	sArr.sort(function(a, b) { return b["timestamp"] - a["timestamp"]; });
+    sArr.sort(function(a, b) { return b["timestamp"] - a["timestamp"]; });
 
-	sArr.forEach(function (s) {
-		var row = $(".foxbox-templates .serial-row").clone();
-		$(".serial-text", row)
-			.text(s["name"] ? s["name"] : s["web_url"])
-			.attr("href", s["web_url"]);
+    sArr.forEach(function (s) {
+        var row = $(".foxbox-templates .serial-row").clone();
+        $(".serial-text", row)
+            .text(s["name"] ? s["name"] : s["web_url"])
+            .attr("href", s["web_url"]);
 
-		$(".remove", row).click(removeOne(s["db_key"]));
-		
-		row.attr("data-db-key", s["db_key"])
-			.appendTo("#serialy tbody");
-	});
+        $(".remove", row).click(removeOne(s["db_key"]));
+
+        row.attr("data-db-key", s["db_key"])
+            .appendTo("#serialy tbody");
+    });
 }
 
 function removeOne(dbKey) {
-	function remove(e) {
-		e.preventDefault();
+    function remove(e) {
+        e.preventDefault();
 
-		firebase.database().ref("/serialy/" + dbKey).remove();
-		// $(e.target).parents(".serial-row").remove();
-	}
-	
-	return remove;
+        firebase.database().ref("/serialy/" + dbKey).remove();
+        // $(e.target).parents(".serial-row").remove();
+    }
+
+    return remove;
 }
 
 function addOne(e) {
-	e.preventDefault();
-	var webUrl = $("#web_url", e.target).val();
+    e.preventDefault();
+    var webUrl = $("#web_url", e.target).val();
 
-	firebase.database().ref("/serialy").push({
-		"web_url": webUrl,
-		"timestamp": {".sv": "timestamp"}
-	});
+    firebase.database().ref("/serialy").push({
+        "web_url": webUrl,
+        "timestamp": {".sv": "timestamp"}
+    });
 }
 
 $(function () {
-	// $('#myModal').modal();
+    // $('#myModal').modal();
 
-	$("form.add").submit(addOne);
+    $("form.add").submit(addOne);
 });
 </script>
 
