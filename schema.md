@@ -102,8 +102,6 @@ If the url already exists in `/links/extracted`, the result is undefined. The op
         "thumbnail": "...",
         "_foxbox_download_status": {
             "type": "FAILED",
-            "downloaded_part": 0.441,
-            "downloaded_bytes": 24875,
             "message": "..."
         },
     }
@@ -117,36 +115,27 @@ If the url already exists in `/links/extracted`, the result is undefined. The op
         "title": "...",
         "thumbnail": "...",
         "_foxbox_download_status": {
-            "type": "SUCCESS",
-            "downloaded_bytes": 24875,
-            "file": "Videos/Anna Karenina/s05-e17.flv"
+            "type": "SUCCESS"
         },
     }
 
-### File to be deleted
+# Filesystem
+
+`/filesystem`
+
+## Folder
 
     {
-        "_type": undefined | "video",
-        "id": "...",
-        "extractor", "MyHitSerial"|"...",
-        "title": "...",
-        "thumbnail": "...",
-        "_foxbox_download_status": {
-            "type": "TO_DELETE",
-            "file": "Videos/Anna Karenina/s05-e17.flv"
-        },
+        "type": "DIRECTORY",
+        "name": "aaafefafeea",
+        "children": {filename: file, ...},
+        "request": undefined | "DELETE"
     }
-    
-### File deleted
 
+## File
     {
-        "_type": undefined | "video",
-        "id": "...",
-        "extractor", "MyHitSerial"|"...",
-        "title": "...",
-        "thumbnail": "...",
-        "_foxbox_download_status": {
-            "type": "DELETED",
-            "file": "Videos/Anna Karenina/s05-e17.flv"
-        },
+        "type": "FILE",
+        "name": "aadaef",
+        "size": 897788,
+        "request": undefined | "DELETE"
     }

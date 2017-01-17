@@ -1,3 +1,5 @@
 requests
 pyrebase
 https://github.com/crabhi/youtube-dl/archive/dda43ff.zip#egg=youtube-dl
+pathvalidate
+docopt
