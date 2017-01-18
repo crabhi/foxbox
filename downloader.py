@@ -119,7 +119,7 @@ def _download_files(db, folder):
             with youtube_dl.YoutubeDL({
                 "outtmpl": os.path.join(folder, _prepare_filename(info_dict)),
                 "logger": logging.getLogger("youtube-dl"),
-                "progress_hooks": [print],
+                "progress_hooks": [],
             }) as ydl:
                 info_dict["_foxbox_download_status"] = {
                     "type": "IN_PROGRESS",
