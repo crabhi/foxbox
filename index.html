@@ -85,6 +85,7 @@ body > * > .loading {
                 </div>
             </form>
         </div>
+
         <h2 class="serialy-title">Serialy<span class="loader"> - loading... <i class="fa fa-refresh fa-spin" style="font-size:64px;"></i></span></h2>
 
         <div class="row">
@@ -100,6 +101,7 @@ body > * > .loading {
     <table>
     <tr class="serial-row" data-db-key="">
         <td>
+            <span class="status"></span>
             <a class="serial-text"></a>
         </td>
         <td class="remove" title="Remove row">
@@ -127,7 +129,7 @@ databaseURL: "https://fox-box.firebaseio.com",
 firebase.initializeApp(config);
 
 firebase.auth().onAuthStateChanged(function(user) {
-    $(function(){
+    $(function() {
         $("body > * > .loading").attr("hidden", "hidden");
         if (!user) {
             $("body > * > .login").removeAttr("hidden");
@@ -145,7 +147,7 @@ function login() {
 
 function reloadData() {
     $(".serialy-title .loader").removeAttr("hidden", "hidden");
-    firebase.database().ref('/serialy').on('value', function(snapshot) {
+    firebase.database().ref('/links').on('value', function(snapshot) {
         updateSeries(snapshot.val());
 
         $(".serialy-title .loader").attr("hidden", "hidden");
@@ -154,25 +156,49 @@ function reloadData() {
 
 function updateSeries(serialy) {
     $("#serialy tbody").empty();
+
+    listSeries(serialy["new"], function(key, s, row) {
+
+        $(".status", row).append($('<i class="fa fa-refresh fa-spin"></i>'));
+        $(".serial-text", row)
+            .text(s["url"])
+            .attr("href", s["url"]);
+        $(".remove", row).click(removeOne("new/" + key));
+    });
+
+    listSeries(serialy["extracted"], function(key, s, row) {
+        var success = s["_result"]["type"] == "success";
+
+        if (success) {
+            var infoDict = s["_result"]["info_dict"];
+            var name = infoDict["title"];
+            $(".serial-text", row)
+                .text(name ? name : s["url"])
+                .attr("href", s["url"]);
+        } else {
+            var text = "ERROR - " + s["url"];
+            $(".status", row).append($('<i class="fa fa-exclamation-circle"></i>'));
+            console.log(s["_result"]["message"]);
+        }
+
+
+        $(".remove", row).click(removeOne("extracted/" + key));
+    });
+}
+
+function listSeries(items, cb) {
     var sArr = [];
-    for (var dbKey in serialy) {
-        var s = serialy[dbKey];
-        s["db_key"] = dbKey;
-        sArr.push(s);
+    for (var dbKey in items) {
+        var s = items[dbKey];
+        sArr.push([dbKey, s]);
     }
 
-    sArr.sort(function(a, b) { return b["timestamp"] - a["timestamp"]; });
+    sArr.sort(function(a, b) { return b[1]["time_added"] - a[1]["time_added"]; });
 
-    sArr.forEach(function (s) {
+    sArr.forEach(function (item) {
         var row = $(".foxbox-templates .serial-row").clone();
-        $(".serial-text", row)
-            .text(s["name"] ? s["name"] : s["web_url"])
-            .attr("href", s["web_url"]);
-
-        $(".remove", row).click(removeOne(s["db_key"]));
-
-        row.attr("data-db-key", s["db_key"])
-            .appendTo("#serialy tbody");
+        cb(item[0], item[1], row);
+        row.appendTo("#serialy tbody");
     });
 }
 
@@ -180,8 +206,7 @@ function removeOne(dbKey) {
     function remove(e) {
         e.preventDefault();
 
-        firebase.database().ref("/serialy/" + dbKey).remove();
-        // $(e.target).parents(".serial-row").remove();
+        firebase.database().ref("/links/" + dbKey).remove();
     }
 
     return remove;
@@ -189,17 +214,17 @@ function removeOne(dbKey) {
 
 function addOne(e) {
     e.preventDefault();
-    var webUrl = $("#web_url", e.target).val();
 
-    firebase.database().ref("/serialy").push({
-        "web_url": webUrl,
-        "timestamp": {".sv": "timestamp"}
+    var inputField = $("#web_url", e.target);
+    var webUrl = inputField.val();
+
+    firebase.database().ref("/links/new").push({
+        "url": webUrl,
+        "time_added": {".sv": "timestamp"}
     });
 }
 
 $(function () {
-    // $('#myModal').modal();
-
     $("form.add").submit(addOne);
 });
 </script>
