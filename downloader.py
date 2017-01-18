@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Usage: downloader.py [--verbose]
+"""Usage: downloader.py [-v] [-f folder]
 
 Checks the FoxBox web database status and periodically
 
@@ -10,6 +10,7 @@ This program runs until stopped.
 
 Options:
 -v, --verbose   Verbose output
+-f, --folder FOLDER    Download folder
 """
 
 import copy
@@ -271,5 +272,9 @@ def run_forever():
 if __name__ == "__main__":
     opts = docopt.docopt(__doc__)
     print(opts)
+
+    if opts["--folder"] is not None:
+        DOWNLOAD_FOLDER = opts["--folder"]
+
     logging.basicConfig(level=logging.DEBUG if opts["--verbose"] else logging.INFO)
     run_forever()
