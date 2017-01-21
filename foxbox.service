@@ -1,0 +1,16 @@
+[Unit]
+Description=FoxBox downloader
+Wants=network.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+ExecStart=/home/pi/foxbox/foxbox.sh
+Restart=always
+RestartSec=2
+StartLimitInterval=15m
+StartLimitBurst=4
+
+[Install]
+WantedBy=multi-user.target
