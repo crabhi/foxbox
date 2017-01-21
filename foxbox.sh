@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 DIR=/home/pi/foxbox
-. "$DIR"/env/bin/activate
 
-exec python "$DIR"/downloader.py
+cd "$DIR"
+
+. env/bin/activate
+
+exec python downloader.py -f ~/Videos
